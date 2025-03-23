@@ -103,21 +103,18 @@ class CarManager extends DatabaseManager
         $cars = [];
 
         foreach ($arrayCars as $arrayCar) {
-            // Création de l'objet CarType
-            $carType = new CarType($arrayCar["carTypeId"], $arrayCar["carTypeName"]);
 
-            // Création de l'objet User (propriétaire)
+            $carType = new CarType($arrayCar["carTypeId"], $arrayCar["carTypeName"]);
             $owner = new User($arrayCar["ownerId"], $arrayCar["ownerName"], "", json_decode($arrayCar["ownerRole"], true));
 
-            // Création de l'objet Car
             $cars[] = new Car(
-                $arrayCar["id"],               // ID de la voiture
-                $arrayCar["brand"],            // Marque de la voiture
-                $arrayCar["model"],            // Modèle de la voiture
-                (int) $arrayCar["horsePower"], // Puissance en chevaux
-                $arrayCar["image"],            // Image de la voiture
-                $carType,                      // Objet CarType
-                $owner                         // Objet User (propriétaire)
+                $arrayCar["id"],               
+                $arrayCar["brand"],            
+                $arrayCar["model"],            
+                (int) $arrayCar["horsePower"], 
+                $arrayCar["image"],            
+                $carType,                      
+                $owner                         
             );
         }
 

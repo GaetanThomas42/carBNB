@@ -27,6 +27,7 @@ class RentalManager extends DatabaseManager
     public function selectByID(int $id): Rental|false
     {
         $rentals = $this->fetchRentals("WHERE r.id = :id", [":id" => $id]);
+        //fetchAll retourne un tableau, on veut un seul élément ou false
         return $rentals[0] ?? false;
     }
 
@@ -47,7 +48,7 @@ class RentalManager extends DatabaseManager
      */
     public function selectByOwnerID(int $id): array|false
     {
-        return $this->fetchRentals("WHERE r.owner_id = :id", [":id" => $id]);
+        return $this->fetchRentals("WHERE owner.id = :id", [":id" => $id]);
     }
 
 

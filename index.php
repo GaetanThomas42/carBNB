@@ -72,17 +72,17 @@ if ($action === 'homePage') {
 
     $carController->myCars($user);
 
-}elseif ($action === 'my_owner_rents' && in_array('CAR_LESSEE', $user->getRoles())) {
+}elseif ($action === 'my_owner_rents' && in_array('CAR_OWNER', $user->getRoles())) {
 
-    $rentalController->myLesseerRents($user->getId());
+    $rentalController->myOwnerRents($user->getId());
 
 } elseif ($action === 'rent_cars' && in_array('CAR_LESSEE', $user->getRoles())) {
 
     $rentalController->rentCars();
 
-}elseif ($action === 'my_owner_rents' && in_array('CAR_LESSEE', $user->getRoles())) {
+}elseif ($action === 'my_lesseer_rents' && in_array('CAR_LESSEE', $user->getRoles())) {
 
-    $rentalController->myOwnerRents($user->getId());
+    $rentalController->myLesseerRents($user->getId());
 
 } elseif ($action === 'rent_form' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_LESSEE', $user->getRoles()))) {
 
