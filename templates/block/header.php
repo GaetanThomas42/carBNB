@@ -48,14 +48,14 @@
                     <?php if (in_array('CAR_LESSEE', $_SESSION["roles"])) { ?>
       
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="index.php?action=rentCar">Louer une voiture</a>
+                            <a class="nav-link text-light" href="index.php?action=index_rent">Louer une voiture</a>
                         </li>
                     <?php } ?>
 
                     <?php if (in_array('CAR_OWNER', $_SESSION["roles"])) { ?>
      
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="index.php?action=myCars">Mes voitures</a>
+                            <a class="nav-link text-light" href="index.php?action=my_cars">Mes voitures</a>
                         </li>
                     <?php } ?>
 

@@ -66,12 +66,17 @@ if ($action === 'homePage') {
 } elseif (!$isLoggedIn) {
     //REDIRECTION SI L'UTILISATEUR N'EST PAS CONNECTÉ
     $indexController->homePage();
-} elseif ($action === 'myCars' && in_array('CAR_OWNER', $user->getRoles())) {
+} elseif ($action === 'my_cars' && in_array('CAR_OWNER', $user->getRoles())) {
 
     $carController->myCars($user);
-} elseif ($action === 'rentCar' && in_array('CAR_LESSEE', $user->getRoles())) {
+} elseif ($action === 'index_rent' && in_array('CAR_LESSEE', $user->getRoles())) {
 
-    $carController->rentCar();
+    $carController->indexRent();
+
+    //index.php?action=logout + Connecté
+} elseif ($action === 'index_rent' && in_array('CAR_LESSEE', $user->getRoles())) {
+
+    $carController->rentCar($id);
 
     //index.php?action=logout + Connecté
 } elseif ($action === 'logout') {

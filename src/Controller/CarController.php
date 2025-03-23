@@ -30,9 +30,22 @@ class CarController
         require_once("./templates/my_cars.php");
     }
 
-    public function rentCar(){
+    public function indexRent(){
         //Récuperer les voitures
         $cars = $this->carManager->selectAll();
+        //Afficher les voitures dans la template
+        require_once("./templates/index_car.php");
+    }
+
+    
+    public function rentCar(int $id){
+        //Récuperer les voitures
+        $car = $this->carManager->selectByID($id);
+        if(!$car){
+            header("Location: index.php?action=index_rent");
+            exit();
+        }
+        $errors = [];
         //Afficher les voitures dans la template
         require_once("./templates/rent_car.php");
     }
