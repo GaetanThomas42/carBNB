@@ -41,7 +41,7 @@ class RentalManager extends DatabaseManager
         return $this->fetchRentals("WHERE r.renter_id = :id", [":id" => $id]);
     }
 
-        /**
+    /**
      * Récupère les locations d'un owner donné
      * @param int $id
      * @return array|false
@@ -171,5 +171,16 @@ class RentalManager extends DatabaseManager
         $requete->execute([":id" => $id]);
 
         return $requete->rowCount() > 0;
+    }
+
+    public function updateStatus(int $rentalId, string $status): bool
+    {
+        $requete = self::getConnexion()->prepare("
+        UPDATE rental SET status = :status WHERE id = :rentalId
+    ");
+        return $requete->execute([
+            ":status" => $status,
+            ":rentalId" => $rentalId
+        ]);
     }
 }

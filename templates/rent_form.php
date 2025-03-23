@@ -16,7 +16,7 @@ require_once("block/header.php");
             <form action="index.php?action=rent_form&id=<?= $car->getId() ?>" method="POST">
                 <input type="hidden" name="carId" value="<?= $car->getId() ?>">
                 <input type="hidden" name="userLesseeId" value="<?= $userLesseeId ?>">
-         
+
                 <div class="mb-3">
                     <label for="start_date" class="form-label">Date de début</label>
                     <input type="date" name="start_date" class="form-control" required>

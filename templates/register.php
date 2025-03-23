@@ -13,10 +13,10 @@ require_once("block/header.php");
         <label for="Username">Username</label>
         <input type="text" name="username">
 
-        <?php if (isset($errors["username"])) {?>
-        <p class="text-danger">
-            <?=$errors["username"] ?>
-        </p>
+        <?php if (isset($errors["username"])) { ?>
+            <p class="text-danger">
+                <?= $errors["username"] ?>
+            </p>
         <?php } ?>
 
     </span>
@@ -26,10 +26,10 @@ require_once("block/header.php");
         <label for="password">Mot de passe</label>
         <input type="password" name="password">
 
-        <?php if (isset($errors["password"])) {?>
-        <p class="text-danger">
-            <?=$errors["password"] ?>
-        </p>
+        <?php if (isset($errors["password"])) { ?>
+            <p class="text-danger">
+                <?= $errors["password"] ?>
+            </p>
         <?php } ?>
 
     </span>

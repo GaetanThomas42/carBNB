@@ -9,4 +9,4 @@ $rentalManager = new RentalManager();
 // Récupérer toutes les locations
 $rentals = $rentalManager->selectAll();
 
-dd($rentals);
+dump(file_exists("images/67e040b64f247dd.png"));

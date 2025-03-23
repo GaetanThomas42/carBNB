@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Manager\CarManager;
+use App\Manager\CarTypeManager;
+use App\Manager\RentalManager;
 use App\Model\Car;
 use App\Model\User;
+use App\Service\FileUploader;
 
 //
 /**
@@ -15,10 +18,15 @@ class CarController
 {
 
     private CarManager $carManager;
+    private RentalManager $rentalManager;
+    private CarTypeManager $carTypeManager;
+
 
     public function __construct()
     {
         $this->carManager = new CarManager();
+        $this->rentalManager = new RentalManager();
+        $this->carTypeManager = new CarTypeManager();
     }
     // Route MyCars  
     // URL : index.php?action=myCars
@@ -26,6 +34,8 @@ class CarController
     {
         //Récuperer les voitures
         $cars = $this->carManager->selectByOwnerID($user->getId());
+        $rentals = $this->rentalManager->selectByOwnerID($user->getId());
+
         //Afficher les voitures dans la template
         require_once("./templates/my_cars.php");
     }
@@ -43,21 +53,43 @@ class CarController
 
     // Route DashboardAdmin ( ancien add.php ) 
     // URL : index.php?action=add
-    public function addCar()
+    public function addCar(User $user)
     {
         $errors = [];
-        // Si le formulaire est validé
+        $carTypes = $this->carTypeManager->selectAll();
+
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+            if (!empty($_POST["carType"])) {
+                $carType = $this->carTypeManager->selectByID($_POST["carType"]);
+                if (!$carType) {
+                    $errors["carType"] = "Le type de voiture n'existe pas";
+                }
+            }
 
             $errors = $this->validateCarForm($errors, $_POST);
 
+            $fileUploader = new FileUploader();
+            $fileUploadResult = [];
+
+            // Si un fichier est sélectionné, on essaie de l'uploader
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $fileUploadResult = $fileUploader->upload($_FILES['image']); // Appel du service d'upload
+            } else {
+                $errors["image"] = "L'image est manquante";
+            }
+
+            // Si le résultat est un tableau d'erreurs, on les fusionne avec les autres erreurs
+            if (is_array($fileUploadResult)) {
+                $errors = array_merge($errors, $fileUploadResult);
+            }
+
             if (empty($errors)) {
-                //Instancier une objet Car avec le sdonnées du formulaire
-                $car = new Car(null, $_POST["brand"], $_POST["model"], $_POST["horsePower"], $_POST["image"]);
-                // Ajouter la voiture en BDD  et rediriger
+                $car = new Car(null, $_POST["brand"], $_POST["model"], $_POST["horsePower"], $fileUploadResult, $carType,  $user);
                 $carManager = new CarManager();
                 $carManager->insert($car);
-                $this->dashboardAdmin();
+                header("Location: index.php?action=my_cars");
                 exit();
             }
         }
@@ -66,35 +98,61 @@ class CarController
 
     // Route EditCar ( ancien update.php ) 
     // URL : index.php?action=edit&id=1
-    public function editCar(int $id)
+    public function editCar(int $id, User $user)
     {
         $car = $this->carManager->selectByID($id); // Un seul connect DB par page
 
-        //Vérifier si la voiture avec l'ID existe en BDD
-        if (!$car) {
+        //Vérifier si la voiture avec l'ID existe en  ou si l'utilisateur est le propriétaire
+        if (!$car || $car->getOwner()->getId() !== $user->getId()) {
 
             header("Location: index.php?action=admin");
             exit();
         }
 
+
+        $carTypes = $this->carTypeManager->selectAll();
+
         $errors = [];
-        // Si le formulaire est validé
+        //Si le formulaire est validé
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-            // Vérifier les champs du formulaire
             $errors = $this->validateCarForm($errors, $_POST);
-            // Si le formulaire n'a pas renvoyé d'erreurs
+            if (empty($errors) && !empty($_FILES['image']['name'])) {
+
+                $fileUploader = new FileUploader();
+                $fileUploadResult = [];
+
+                if ($_FILES['image']['error'] == 0) {
+                    $fileUploadResult = $fileUploader->upload($_FILES['image']); // Appel du service d'upload
+                    // Si le résultat est un tableau d'erreurs, on les fusionne avec les autres erreurs
+                    if (is_array($fileUploadResult)) {
+                        $errors = $fileUploadResult;
+                    } else {
+                        $fileUploader->delete($car->getImage());
+                        $car->setImage($fileUploadResult);
+                    }
+                } else {
+                    $errors["image"] = "L'image est manquante";
+                }
+            }
+
+            if (!empty($_POST["carType"])) {
+                $carType = $this->carTypeManager->selectByID($_POST["carType"]);
+                if (!$carType) {
+                    $errors["carType"] = "Le type de voiture n'existe pas";
+                }
+            }
+
+
             if (empty($errors)) {
 
-                // Mettre à jour la voiture $car et rediriger
                 $car->setModel($_POST["model"]);
                 $car->setBrand($_POST["brand"]);
-                $car->setImage($_POST["image"]);
                 $car->setHorsePower($_POST["horsePower"]);
-
+                $car->setCarType($carType);
                 $this->carManager->update($car);
 
-                header("Location: index.php?action=admin");
+                header("Location: index.php?action=my_cars");
                 exit();
             }
         }
@@ -102,23 +160,25 @@ class CarController
     }
     // Route Delete ( ancien delete.php ) 
     // URL : index.php?action=delete&id=1
-    public function deleteCar(int $id)
+    public function deleteCar(int $id, User $user)
     {
         $car = $this->carManager->selectByID($id);
 
         //Vérifier si la voiture avec l'ID existe en BDD
         if (!$car) {
-
-            header("Location: index.php?action=admin");
+            header("Location: index.php?action=my_cars");
+            exit();
+        }
+        if ($car->getOwner()->getId() !== $user->getId()) {
+            header("Location: index.php?action=my_cars");
             exit();
         }
 
         //Si le form est validé
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            //Supprimer la voiture et rediriger
+            //Possible relation avec les locations à gérer ici
             $this->carManager->deleteByID($car->getId());
-
-            header("Location: index.php?action=admin");
+            header("Location: index.php?action=my_cars");
             exit();
         }
 
@@ -137,10 +197,10 @@ class CarController
         if (empty($carForm["horsePower"])) {
             $errors["horsePower"] = "la puissance du vehicule est manquante";
         }
-        if (empty($carForm["image"])) {
-            $errors["image"] = "l'image de la voiture est manquante";
+
+        if (empty($carForm["carType"])) {
+            $errors["image"] = "Le type est manquant";
         }
-        //Démo class CarFormValidator
 
         return $errors;
     }

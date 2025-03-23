@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Model\Car;
 use App\Model\CarType;
 use App\Model\User;
+use App\Service\FileUploader;
 use PDO;
 
 /**
@@ -108,13 +109,13 @@ class CarManager extends DatabaseManager
             $owner = new User($arrayCar["ownerId"], $arrayCar["ownerName"], "", json_decode($arrayCar["ownerRole"], true));
 
             $cars[] = new Car(
-                $arrayCar["id"],               
-                $arrayCar["brand"],            
-                $arrayCar["model"],            
-                (int) $arrayCar["horsePower"], 
-                $arrayCar["image"],            
-                $carType,                      
-                $owner                         
+                $arrayCar["id"],
+                $arrayCar["brand"],
+                $arrayCar["model"],
+                (int) $arrayCar["horsePower"],
+                $arrayCar["image"],
+                $carType,
+                $owner
             );
         }
 
@@ -178,9 +179,23 @@ class CarManager extends DatabaseManager
      */
     public function deleteByID(int $id): bool
     {
-        $requete = self::getConnexion()->prepare("DELETE FROM car WHERE id = :id;");
-        $requete->execute([":id" => $id]);
-
-        return $requete->rowCount() > 0;
+        $car = $this->selectByID($id);
+        if (!$car) {
+            return false;
+        } else {
+            try {
+                $requete = self::getConnexion()->prepare("DELETE FROM car WHERE id = :id;");
+                $requete->execute([":id" => $id]);
+                if ($requete->rowCount() > 0) {
+                    $fileUploader = new FileUploader();
+                    $fileUploader->delete($car->getImage());
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (\PDOException $e) {
+                return false;
+            }
+        }
     }
 }

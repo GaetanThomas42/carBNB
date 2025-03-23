@@ -3,20 +3,32 @@ $title = "Louer une voiture";
 require_once("block/header.php");
 ?>
 
-<h1 class="text-center"><?= $title ?></h1>
+<h1 class="text-center text-primary my-4">🚗 <?= $title ?></h1>
 
-<div class="d-flex flex-wrap justify-content-evenly">
-    <?php foreach ($cars as $car): ?>
-        <div class="col-4 d-flex p-3 justify-content-center">
-            <a href="index.php?action=rent_form&id=<?= $car->getId() ?>" style="text-decoration: none; color: inherit;">
-                <img src="images/<?= $car->getImage() ?>" alt="<?= $car->getModel() ?>" style="height: 200px; width: auto;">
-                <div class="p-2">
-                    <h2><?= $car->getModel() ?></h2>
-                    <p><?= $car->getBrand() ?>, <?= $car->getHorsePower() ?> chevaux</p>
-                </div>
-            </a>
-        </div>
-    <?php endforeach; ?>
+<div class="container">
+    <div class="row">
+        <?php foreach ($cars as $car): ?>
+            <div class="col-md-4 mb-4">
+                <a href="index.php?action=rent_form&id=<?= $car->getId() ?>" class="text-decoration-none text-dark">
+                    <div class="card shadow-lg h-100">
+                        <img src="images/<?= $car->getImage() ?>"
+                            alt="<?= $car->getModel() ?>"
+                            class="card-img-top"
+                            style="height: 200px; object-fit: cover;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><?= $car->getModel() ?></h5>
+                            <p class="card-text">
+                                <strong>Marque :</strong> <?= $car->getBrand() ?><br>
+                                <strong>Type :</strong> <?= $car->getCarType()->getName() ?><br>
+                                <strong>Puissance :</strong> <?= $car->getHorsePower() ?> chevaux
+                            </p>
+                            <button class="btn btn-primary">Louer cette voiture</button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
 </div>
 
 <?php require_once("block/footer.php"); ?>

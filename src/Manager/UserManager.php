@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Manager;
 
 use App\Model\User;
@@ -7,7 +8,8 @@ use App\Model\User;
  * UserManager
  * Gestion de la table User
  */
-class UserManager extends DatabaseManager{
+class UserManager extends DatabaseManager
+{
 
     public function selectByUsername(string $username): User|false
     {
@@ -18,13 +20,12 @@ class UserManager extends DatabaseManager{
 
         $arrayUser = $requete->fetch();
         //Si pas de résultat fetch()
-        if(!$arrayUser) {
+        if (!$arrayUser) {
 
             return false;
         }
         //Renvoyer l'instance d'un objet Car avec les données du tableau associatif
-        return new User($arrayUser["id"], $arrayUser["username"], $arrayUser["password"],json_decode($arrayUser["role"], true));
-    
+        return new User($arrayUser["id"], $arrayUser["username"], $arrayUser["password"], json_decode($arrayUser["role"], true));
     }
 
     public function selectByID(int $id): User|false
@@ -36,24 +37,23 @@ class UserManager extends DatabaseManager{
 
         $arrayUser = $requete->fetch();
         //Si pas de résultat fetch()
-        if(!$arrayUser) {
+        if (!$arrayUser) {
 
             return false;
         }
         //Renvoyer l'instance d'un objet Car avec les données du tableau associatif
-        return new User($arrayUser["id"], $arrayUser["username"], $arrayUser["password"],json_decode($arrayUser["role"], true));
-    
+        return new User($arrayUser["id"], $arrayUser["username"], $arrayUser["password"], json_decode($arrayUser["role"], true));
     }
 
-   public function insert(User $user): bool
-   {
-       $requete = self::getConnexion()->prepare("INSERT INTO user (username,password, roles) VALUES (:username,:password, :roles);");
+    public function insert(User $user): bool
+    {
+        $requete = self::getConnexion()->prepare("INSERT INTO user (username,password, roles) VALUES (:username,:password, :roles);");
 
-       $requete->execute([
-           "username" => $user->getUsername(),
-           "password" => $user->getPassWord(),
+        $requete->execute([
+            "username" => $user->getUsername(),
+            "password" => $user->getPassWord(),
             "roles" => json_encode($user->getRoles())
-       ]);
-       return $requete->rowCount() > 0;
-   }
+        ]);
+        return $requete->rowCount() > 0;
+    }
 }

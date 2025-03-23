@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model;
 
 class User
@@ -46,7 +47,7 @@ class User
         $this->password = $password;
     }
 
-    public function getRoles(): array 
+    public function getRoles(): array
     {
         return $this->roles;
     }

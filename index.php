@@ -72,9 +72,9 @@ if ($action === 'homePage') {
 
     $carController->myCars($user);
 
-}elseif ($action === 'my_owner_rents' && in_array('CAR_OWNER', $user->getRoles())) {
+} elseif ($action === 'confirm_rental' && in_array('CAR_OWNER', $user->getRoles())) {
 
-    $rentalController->myOwnerRents($user->getId());
+    $rentalController->confirmRental($user->getId());
 
 } elseif ($action === 'rent_cars' && in_array('CAR_LESSEE', $user->getRoles())) {
 
@@ -101,17 +101,17 @@ if ($action === 'homePage') {
     //index.php?action=add + Connecté
 } elseif ($action === 'add_car'  && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
-    $carController->addCar();
+    $carController->addCar($user);
 
     //index.php?action=edit&id=10 + Connecté
 } elseif ($action === 'edit_car' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
-    $carController->editCar($id);
+    $carController->editCar($id, $user);
 
     //index.php?action=delete&id=10 + Connecté
 } elseif ($action === 'delete_car' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
-    $carController->deleteCar($id);
+    $carController->deleteCar($id, $user);
 
     //Sinon aucune route correspond -> page d'accueil par défaut + Clean url
 } else {
