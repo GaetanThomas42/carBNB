@@ -10,7 +10,7 @@ require_once("block/header.php");
     <h1 class="text-center mb-4"><?= $title ?></h1>
 
     <div class="m-5">
-        <a class="btn btn-success" href="index.php?action=add">Ajouter une Voiture</a>
+        <a class="btn btn-success" href="index.php?action=add_car">Ajouter une Voiture</a>
     </div>
 
     <div class="d-flex flex-wrap justify-content-evenly gap-4">
@@ -24,8 +24,8 @@ require_once("block/header.php");
                         <h5 class="card-title"><?= $car->getModel() ?></h5>
                         <p class="card-text"><?= $car->getBrand() ?> - <?= $car->getHorsePower() ?> chevaux</p>
                         <div class="d-flex justify-content-between">
-                            <a class="btn btn-primary" href="index.php?action=edit&id=<?= $car->getId() ?>">Modifier</a>
-                            <a class="btn btn-danger" href="index.php?action=delete&id=<?= $car->getId() ?>">Supprimer</a>
+                            <a class="btn btn-primary" href="index.php?action=edit_car&id=<?= $car->getId() ?>">Modifier</a>
+                            <a class="btn btn-danger" href="index.php?action=delete_car&id=<?= $car->getId() ?>">Supprimer</a>
                         </div>
                     </div>
                 </div>

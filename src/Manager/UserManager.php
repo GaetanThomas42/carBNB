@@ -27,6 +27,24 @@ class UserManager extends DatabaseManager{
     
     }
 
+    public function selectByID(int $id): User|false
+    {
+        $requete = self::getConnexion()->prepare("SELECT * FROM user WHERE id = :id;");
+        $requete->execute([
+            ":id" => $id
+        ]);
+
+        $arrayUser = $requete->fetch();
+        //Si pas de résultat fetch()
+        if(!$arrayUser) {
+
+            return false;
+        }
+        //Renvoyer l'instance d'un objet Car avec les données du tableau associatif
+        return new User($arrayUser["id"], $arrayUser["username"], $arrayUser["password"],json_decode($arrayUser["role"], true));
+    
+    }
+
    public function insert(User $user): bool
    {
        $requete = self::getConnexion()->prepare("INSERT INTO user (username,password, roles) VALUES (:username,:password, :roles);");

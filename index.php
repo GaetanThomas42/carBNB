@@ -1,9 +1,9 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use App\Controller\AdminController;
 use App\Controller\CarController;
 use App\Controller\IndexController;
+use App\Controller\RentalController;
 use App\Controller\SecurityController;
 use App\Manager\UserManager;
 
@@ -38,6 +38,7 @@ if (isset($_GET['id'])) {
 $indexController = new IndexController();
 $carController = new CarController();
 $securityController = new SecurityController();
+$rentalController = new RentalController();
 
 // Gérer les routes avec une suite de conditions if
 
@@ -48,7 +49,7 @@ if ($action === 'homePage') {
     $indexController->homePage();
 
     //index.php?action=detail&id=12
-} elseif ($action === 'detail' && !is_null($id)) {
+} elseif ($action === 'detail_car' && !is_null($id)) {
 
     $indexController->detailCar($id);
 
@@ -66,19 +67,28 @@ if ($action === 'homePage') {
 } elseif (!$isLoggedIn) {
     //REDIRECTION SI L'UTILISATEUR N'EST PAS CONNECTÉ
     $indexController->homePage();
+
 } elseif ($action === 'my_cars' && in_array('CAR_OWNER', $user->getRoles())) {
 
     $carController->myCars($user);
-} elseif ($action === 'index_rent' && in_array('CAR_LESSEE', $user->getRoles())) {
 
-    $carController->indexRent();
+}elseif ($action === 'my_owner_rents' && in_array('CAR_LESSEE', $user->getRoles())) {
 
-    //index.php?action=logout + Connecté
-} elseif ($action === 'index_rent' && in_array('CAR_LESSEE', $user->getRoles())) {
+    $rentalController->myLesseerRents($user->getId());
 
-    $carController->rentCar($id);
+} elseif ($action === 'rent_cars' && in_array('CAR_LESSEE', $user->getRoles())) {
 
-    //index.php?action=logout + Connecté
+    $rentalController->rentCars();
+
+}elseif ($action === 'my_owner_rents' && in_array('CAR_LESSEE', $user->getRoles())) {
+
+    $rentalController->myOwnerRents($user->getId());
+
+} elseif ($action === 'rent_form' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_LESSEE', $user->getRoles()))) {
+
+    $rentalController->rentForm($id,$user->getId());
+
+    //index.php?action=delete&id=10 + Connecté
 } elseif ($action === 'logout') {
 
     $securityController->logout();
@@ -89,17 +99,17 @@ if ($action === 'homePage') {
     $carController->dashboardAdmin();
 
     //index.php?action=add + Connecté
-} elseif ($action === 'add'  && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
+} elseif ($action === 'add_car'  && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
     $carController->addCar();
 
     //index.php?action=edit&id=10 + Connecté
-} elseif ($action === 'edit' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $roles) || in_array('CAR_OWNER', $roles))) {
+} elseif ($action === 'edit_car' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
     $carController->editCar($id);
 
     //index.php?action=delete&id=10 + Connecté
-} elseif ($action === 'delete' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $roles) || in_array('CAR_OWNER', $roles))) {
+} elseif ($action === 'delete_car' && !is_null($id) && $isLoggedIn && (in_array('ADMIN', $user->getRoles()) || in_array('CAR_OWNER', $user->getRoles()))) {
 
     $carController->deleteCar($id);
 

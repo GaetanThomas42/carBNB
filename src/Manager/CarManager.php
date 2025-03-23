@@ -74,7 +74,7 @@ class CarManager extends DatabaseManager
         }
 
         $carType = new CarType($arrayCar["carTypeId"], $arrayCar["carTypeName"]);
-        $owner = new User($arrayCar["ownerId"], $arrayCar["ownerName"], "", $arrayCar["ownerRole"]);
+        $owner = new User($arrayCar["ownerId"], $arrayCar["ownerName"], "", json_decode($arrayCar["ownerRole"], true));
 
         return new Car(
             $arrayCar["id"],

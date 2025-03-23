@@ -17,7 +17,6 @@ CREATE TABLE User (
     role JSON NOT NULL
 );
 
--- Refaire password a la main avec password_hash()
 -- password: admin
 INSERT INTO User (username, password, role) VALUES
 ('admin', '$2y$10$lEIPhc1a.NUi59PgcfMn.et3BBmwTLoXm2FFU53FZC2zYC0yCJR/i', '["ADMIN"]'),
